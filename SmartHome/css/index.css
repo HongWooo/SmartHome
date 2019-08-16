@@ -79,13 +79,6 @@ html, body {
 }
 
 
-.webgl{
-    height: 100%;
-    width:100%;
-    background-color: orangered;
-    position: relative;
-}
-
 .tool-bar{
     position: absolute;
     top:0;
@@ -250,4 +243,12 @@ html, body {
 }
 .tool-bar-right-header-1 #furn-type .select:hover{
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+.webgl{
+    height: 100%;
+    width:100%;
+    background-color: orangered;
+    position: relative;
 }
