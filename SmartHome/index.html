@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!--<link rel="stylesheet" type="text/css" href="css/bootstrap.css">-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+</head>
+<body>
+
+<div class="main">
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Brand</a>
+            </div>
+            <div class="collapse navbar-collapse navbar-right" id="navbar-collapse">
+                <ul class="nav navbar-nav">
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            设置<span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">保险行业</a></li>
+                        </ul>
+                    </li>
+                    <li><button id="save" class="btn btn-default"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span><span>保存</span></button></li>
+                    <li><button id="exit" class="btn btn-default"><span class="glyphicon glyphicon-off" aria-hidden="true"></span><span>退出</span></button></li>
+
+                </ul>
+            </div>
+
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="content">
+        <div class="container">
+            <div class="row">
+                <div class="webgl ">
+                    <div class="tool-bar ">
+                        <div class="row">
+                            <div class="tool-bar-left col-md-3 col-sm-3 col-xs-3">
+                                <ul class="nav nav-stacked">
+                                    <li class="active">户型</li>
+                                    <li >家具</li>
+                                    <li >模板</li>
+                                </ul>
+                            </div>
+                            <div class="tool-bar-right col-md-9 col-sm-9 col-xs-9">
+                                <div class="tool-bar-right-header-0">
+                                    <div class="tool-bar-right-heading ">
+                                        <span>绘制户型</span>
+                                        <div class="hiden-right glyphicon glyphicon-chevron-left"></div>
+                                        <hr/>
+                                    </div>
+                                    <div class="tool-bar-right-content">
+                                        <div class="wall panel panel-default">
+                                            <div class="panel-heading">画墙</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>画墙</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画房间</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画洞</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="door panel panel-default">
+                                            <div class="panel-heading">门窗</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="door panel panel-default">
+                                            <div class="panel-heading">结构部件</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+                                <div class="tool-bar-right-header-1">
+                                    <div class="tool-bar-right-heading ">
+                                        <span>添加家具</span>
+                                        <div class="hiden-right glyphicon glyphicon-chevron-left"></div>
+                                        <hr/>
+                                        <div class="form-inline">
+                                            <form id="furn-type"class="form-group" action="#">
+                                                <label>选择家具类别</label>
+                                                <select class="select form-control">
+                                                    <option value="all">所有</option>
+                                                    <option value="floor">地板</option>
+                                                    <option value="door-window">门窗</option>
+                                                    <option value="sofa">沙发</option>
+                                                    <option value="desk">桌子</option>
+                                                    <option value="bed">床</option>
+                                                </select>
+                                            </form>
+                                        </div>
+                                        <hr/>
+                                    </div>
+                                    <div class="tool-bar-right-content">
+                                        <div class="floor panel panel-default">
+                                            <div class="panel-heading">地板</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>画墙</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画房间</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画洞</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="door-window panel panel-default">
+                                            <div class="panel-heading">门窗</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="sofa panel panel-default">
+                                            <div class="panel-heading">沙发</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="desk panel panel-default">
+                                            <div class="panel-heading">桌子</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="bed panel panel-default">
+                                            <div class="panel-heading">床</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>单开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>双开门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>移门</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>飘窗</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>落地窗</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tool-bar-right-header-2">
+                                    <div class="tool-bar-right-heading ">
+                                        <span>选择模板</span>
+                                        <div class="hiden-right glyphicon glyphicon-chevron-left"></div>
+                                        <hr/>
+                                    </div>
+                                    <div class="tool-bar-right-content">
+                                        <div class="wall panel panel-default">
+                                            <div class="panel-heading">画墙</div>
+                                            <div class="panel-body">
+                                                <ul class="list">
+                                                    <li class="list-item"><img src="img/wall.png"><p>画墙</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画房间</p></li>
+                                                    <li class="list-item"><img src="img/wall.png"><p>画洞</p></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="view">
+        <span id="view-2d" class="active">平面</span>
+        <span id="view-3d">3D</span>
+        <button id="render" class="btn btn-primary">渲染</button>
+    </div>
+</div>
+
+
+
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+<script src="js/index.js"></script>
+</body>
+</html>

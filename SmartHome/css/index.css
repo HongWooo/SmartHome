@@ -1,0 +1,253 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+.main{
+    height: 100%;
+    padding: 50px 0 0;
+    box-sizing: border-box ;
+    position: relative;
+}
+/*.nav{*/
+    /*height: 44px;*/
+    /*margin: -44px 0 0;*/
+    /*!*border: 1px solid red;*!*/
+/*}*/
+.navbar{
+    height: 50px;
+    margin:-50px 0 0 ;
+    z-index: 2;
+    background-color: whitesmoke;
+}
+
+.navbar .navbar-right .btn{
+    margin-top: 6px ;
+    margin-left: 18px;
+}
+
+
+.navbar .navbar-right .btn span:last-child{
+    margin-left: 5px ;
+}
+
+.view{
+    height: 38px;
+    width: 170px;
+    background-color: white;
+    position: absolute;
+    top: 51px;
+    right: 20px;
+    padding: 0 10px;
+    border-radius: 0 0 5px 5px;
+    cursor:pointer
+}
+.view span{
+    height: 38px;
+    width: 40px;
+    line-height: 38px;
+    text-align: center;
+    display: inline-block;
+    font-size: 12px;
+}
+
+.view .active{
+    border-bottom: 2px solid #1b6d85;
+    color: #1b6d85;
+}
+
+.view .btn{
+    height: 30px;
+    text-align: center;
+}
+
+
+.content{
+    height: 100%;
+    z-index: 1;
+}
+
+.content .container{
+    height: 100%;
+    width: 100%;
+    padding: 0;
+}
+.content .container >.row{
+    height: 100%;
+    width: 100%;
+    margin: 0;
+}
+
+
+.webgl{
+    height: 100%;
+    width:100%;
+    background-color: orangered;
+    position: relative;
+}
+
+.tool-bar{
+    position: absolute;
+    top:0;
+    left: 0;
+    height: 100%;
+    width:408px;
+}
+.tool-bar >.row{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+.tool-bar .tool-bar-left{
+    height: 100%;
+    width: 80px;
+    background-color:whitesmoke;
+    padding: 0;
+    cursor:pointer
+
+}
+
+.tool-bar-left ul{
+    height: 100%;
+}
+.tool-bar-left li{
+    height: 33%;
+    text-align: center;
+    width: 100%;
+    line-height: 200px;
+    border-right: 1px solid whitesmoke;
+}
+
+.tool-bar-left li:hover{
+    background-color: lightgrey;
+}
+.tool-bar-left .nav{
+    height: 100%;
+    width: 100%;
+    padding: 0;
+}
+
+.tool-bar-left .nav .active{
+    background-color: white;
+    border: none;
+}
+
+
+.tool-bar-right{
+    border-radius: 0 10px 10px 0;
+    height: 100%;
+    width: 328px;
+    background-color: white;
+    padding-right: 2px;
+}
+
+.tool-bar-right-heading{
+    padding:20px 15px 0 0;
+}
+
+.tool-bar-right  span{
+    font-size: 18px;
+    margin: 15px 10px;
+}
+.tool-bar-right .glyphicon-chevron-left{
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    float: right;
+    cursor: pointer;
+}
+.tool-bar-right  hr{
+    margin-top: 10px    ;
+}
+.tool-bar-right-content{
+    height: 590px;
+    overflow: auto;
+}
+
+/*修改滚动条样式*/
+.tool-bar-right-content::-webkit-scrollbar{
+    width: 5px;
+}
+.tool-bar-right-content::-webkit-scrollbar-thumb{
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.2);
+}
+.tool-bar-right-content::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    border-radius: 0;
+    background: rgba(0,0,0,0.1);
+}
+
+.tool-bar-right .tool-bar-right-header-0{
+    display: block;
+}
+
+.tool-bar-right .tool-bar-right-header-1{
+    display: none;
+}
+
+.tool-bar-right .tool-bar-right-header-2{
+    display: none;
+}
+
+
+
+
+
+/*右侧工具栏通用样式*/
+
+.tool-bar-right .panel,.tool-bar-right .panel-default{
+    border: none;
+    border-bottom: 1px solid whitesmoke;
+}
+.tool-bar-right .panel-heading{
+    border-bottom: none;
+    background-color: white;
+}
+.tool-bar-right .panel-body ul{
+    padding: 0;
+}
+.tool-bar-right .panel-body li{
+    list-style: none;
+    float: left;
+    margin-left: 8px;
+}
+.tool-bar-right .panel-body img:hover{
+    background-color: lightgrey;
+}
+
+.tool-bar-right .panel-body p{
+    text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color:#333333;
+}
+
+.tool-bar-right-header-1 .tool-bar-right-content{
+    height: 500px;
+}
+
+.tool-bar-right-header-1 #furn-type label{
+    margin-left: 12px;
+}
+.tool-bar-right-header-1 #furn-type .select{
+    width: 150px;
+    height: 30px;
+    position: relative;
+    vertical-align: middle;
+    padding: 0;
+    overflow: hidden;
+    background-color: #fff;
+    color: #555;
+    border: 1px solid #aaa;
+    text-shadow: none;
+    border-radius: 4px;
+    transition: box-shadow 0.25s ease;
+    margin-left: 15px;
+}
+.tool-bar-right-header-1 #furn-type .select:hover{
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
