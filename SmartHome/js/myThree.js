@@ -1,6 +1,6 @@
 // basic
 var scene, camera, renderer;
-var width = window.innerWidth, height = window.innerHeight;
+var width = document.getElementById("canvas").offsetWidth, height = document.getElementById("canvas").offsetHeight;
 
 function initBasic() {
     scene = new THREE.Scene();
@@ -94,6 +94,16 @@ init();
 render();
 
 // window EventListener
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
+    width = document.getElementById("canvas").offsetWidth;
+    height = document.getElementById("canvas").offsetHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+    render();
+}
+
 window.addEventListener('keydown', function (event) {
     switch (event.keyCode) {
         case 81: // Q
