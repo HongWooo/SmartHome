@@ -249,6 +249,5 @@ html, body {
 .webgl{
     height: 100%;
     width:100%;
-    background-color: orangered;
     position: relative;
 }
