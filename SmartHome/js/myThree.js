@@ -1,3 +1,7 @@
+import * as THREE from './node_modules/three/build/three.module.js';
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from './node_modules/three/examples/jsm/controls/TransformControls.js';
+
 // basic
 var scene, camera, renderer;
 var width = document.getElementById("canvas").offsetWidth, height = document.getElementById("canvas").offsetHeight;
@@ -18,7 +22,7 @@ function initBasic() {
 }
 
 // light
-var ambientLight, spotLight;
+var ambientLight, directionalLight;
 
 function initLight() {
     ambientLight = new THREE.AmbientLight(0xffffff);
@@ -59,7 +63,7 @@ function initElements() {
 var orbit;
 
 function initOrbitControls() {
-    orbit = new THREE.OrbitControls(camera, renderer.domElement);
+    orbit = new OrbitControls(camera, renderer.domElement);
     orbit.update();
     orbit.addEventListener('change', render);
 }
@@ -67,7 +71,7 @@ function initOrbitControls() {
 var transform;
 
 function initTransformControls() {
-    transform = new THREE.TransformControls(camera, renderer.domElement);
+    transform = new TransformControls(camera, renderer.domElement);
     transform.addEventListener('change', render);
     transform.addEventListener('dragging-changed', function (event) {
         orbit.enabled = !event.value;
@@ -112,6 +116,9 @@ window.addEventListener('keydown', function (event) {
 
         case 17: // Ctrl
             transform.setTranslationSnap(100);
+            Math.degToRad = function (degrees) {
+                return degrees * Math.PI / 180;
+            };
             transform.setRotationSnap(Math.degToRad(15));
             break;
 
