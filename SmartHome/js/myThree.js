@@ -1,118 +1,259 @@
+import * as THREE from './node_modules/three/build/three.module.js';
+import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
+import { TransformControls } from './node_modules/three/examples/jsm/controls/TransformControls.js';
+
 // basic
-var scene, camera, renderer;
-var width = document.getElementById("canvas").offsetWidth, height = document.getElementById("canvas").offsetHeight;
+var renderer, scene, camera;
 
 function initBasic() {
-    scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera(60, width / height, 1, 1000);
-    camera.position.set(10, 10, 6);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(document.getElementById("canvas").offsetWidth, document.getElementById("canvas").offsetHeight);
+    renderer.shadowMap.enabled = true;
+    document.getElementById("canvas").appendChild(renderer.domElement);
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+
+    camera = new THREE.PerspectiveCamera(60, document.getElementById("canvas").offsetWidth / document.getElementById("canvas").offsetHeight, 1, 10000);
+    camera.position.set(500, 800, 1300);
     camera.lookAt(0, 0, 0);
 
-    renderer = new THREE.WebGLRenderer();
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(width, height);
-    renderer.setClearColor(0xCCCCCC);
-    renderer.shadowMapEnabled = true;
-    document.getElementById("canvas").appendChild(renderer.domElement);
 }
 
+
 // light
-var ambientLight, spotLight;
+var ambientLight, directionalLight;
 
 function initLight() {
+
     ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
 
     directionalLight = new THREE.DirectionalLight(0xffffff, 0.618);
-    directionalLight.position.set(5, 5, -5);
+    directionalLight.position.set(1, 0.75, 0.5).normalize();
     directionalLight.castShadow = true;
     scene.add(directionalLight);
+
 }
 
-// elements
-var planeGeometry, boxGeometry;
-var planeMaterial, boxMaterial;
-var plane, box;
 
-function initElements() {
-    planeGeometry = new THREE.PlaneGeometry(11, 11);
-    planeMaterial = new THREE.MeshLambertMaterial({
-        color: 0xB0C4DE,
-    });
-    plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = -Math.PI / 2;
-    plane.receiveShadow = true;
-    scene.add(plane);
-
-    boxGeometry = new THREE.BoxGeometry(2, 2, 2);
-    boxMaterial = new THREE.MeshLambertMaterial({
-        color: 0x4682B4,
-    });
-    box = new THREE.Mesh(boxGeometry, boxMaterial);
-    box.position.y = 1;
-    box.castShadow = true;
-    scene.add(box);
-}
-
-// controls
-var orbit;
+// control
+var orbit, transform;
 
 function initOrbitControls() {
-    orbit = new THREE.OrbitControls(camera, renderer.domElement);
+
+    orbit = new OrbitControls(camera, renderer.domElement);
     orbit.update();
     orbit.addEventListener('change', render);
+
 }
 
-var transform;
-
 function initTransformControls() {
-    transform = new THREE.TransformControls(camera, renderer.domElement);
+
+    transform = new TransformControls(camera, renderer.domElement);
     transform.addEventListener('change', render);
     transform.addEventListener('dragging-changed', function (event) {
         orbit.enabled = !event.value;
     });
-    transform.attach(box);
+    Math.degToRad = function (degrees) {
+        return degrees * Math.PI / 180;
+    };
+    transform.setRotationSnap(Math.degToRad(15));
     scene.add(transform);
+
 }
 
-// init all
-function init() {
-    initBasic();
-    initLight();
-    initElements();
+function initControls() {
+
     initOrbitControls();
     initTransformControls();
+
 }
 
-// render
-function render() {
-    renderer.render(scene, camera);
+
+// element
+var objects = [];
+var rollOverMesh;
+// var cubeGeo, cubeMaterial;
+var plane;
+var mouse, raycaster, isDelete = false, isControl = false;
+
+function initElement() {
+
+    var rollOverGeo = new THREE.BoxBufferGeometry(50, 50, 50);
+    var rollOverMaterial = new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        opacity: 0.5,
+        transparent: true,
+    });
+    rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+    scene.add(rollOverMesh);
+
+    var gridHelper = new THREE.GridHelper(1000, 20);
+    scene.add(gridHelper);
+
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    var planeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
+    planeGeo.rotateX(- Math.PI / 2);
+    plane = new THREE.Mesh(planeGeo, new THREE.MeshLambertMaterial({
+        color: 0xB0C4DE,
+        visible: false,
+    }));
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    objects.push(plane);
+
 }
 
-init();
-render();
 
-// window EventListener
-window.addEventListener('resize', onWindowResize, false);
+// event listener
+function initEventListener() {
+
+    window.addEventListener('resize', onWindowResize, false);
+
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+    document.addEventListener('click', onDocumentClick, false);
+    document.addEventListener('keydown', onDocumentKeyDown, false);
+    document.addEventListener('keyup', onDocumentKeyUp, false);
+
+}
+
 function onWindowResize() {
-    width = document.getElementById("canvas").offsetWidth;
-    height = document.getElementById("canvas").offsetHeight;
-    camera.aspect = width / height;
+
+    camera.aspect = document.getElementById("canvas").offsetWidth / document.getElementById("canvas").offsetHeight;
     camera.updateProjectionMatrix();
-    renderer.setSize(width, height);
+
+    renderer.setSize(document.getElementById("canvas").offsetWidth, document.getElementById("canvas").offsetHeight);
+
     render();
+
 }
 
-window.addEventListener('keydown', function (event) {
+var INTERSECTED;
+
+function onDocumentMouseMove(event) {
+
+    event.preventDefault();
+
+    mouse.set((event.offsetX / document.getElementById("canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("canvas").offsetHeight) * 2 + 1);
+
+    raycaster.setFromCamera(mouse, camera);
+
+    var intersects = raycaster.intersectObjects(objects);
+
+    if (intersects.length > 0) {
+
+        var intersect = intersects[0];
+
+        if (isControl || isDelete) {
+
+            if (INTERSECTED != intersects[0].object) {
+
+                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+                INTERSECTED = intersects[0].object;
+                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+                INTERSECTED.material.emissive.setHex(0xff0000);
+
+            }
+
+        } else {
+
+            rollOverMesh.position.copy(intersect.point).add(intersect.face.normal);
+            rollOverMesh.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+
+        }
+
+    } else {
+
+        if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+        INTERSECTED = null;
+
+    }
+
+    render();
+
+}
+
+function onDocumentClick(event) {
+
+    event.preventDefault();
+
+    mouse.set((event.offsetX / document.getElementById("canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("canvas").offsetHeight) * 2 + 1);
+
+    raycaster.setFromCamera(mouse, camera);
+
+    var intersects = raycaster.intersectObjects(objects);
+
+    if (intersects.length > 0) {
+
+        var intersect = intersects[0];
+
+        if (isDelete && !isControl) {
+
+            if (intersect.object != plane) {
+
+                scene.remove(intersect.object);
+
+                objects.splice(objects.indexOf(intersect.object), 1);
+
+            }
+
+        } else if (!isControl) {
+
+            var voxel = new THREE.Mesh(
+                new THREE.BoxBufferGeometry(50, 50, 50),
+                new THREE.MeshLambertMaterial({
+                    color: 0x4682B4,
+                }),
+            );
+            voxel.position.copy(intersect.point).add(intersect.face.normal);
+            voxel.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+            voxel.castShadow = true;
+            scene.add(voxel);
+
+            objects.push(voxel);
+
+        } else if (isControl) {
+
+            if (intersect.object != plane) {
+
+                transform.attach(intersect.object);
+
+            }
+
+        }
+
+        render();
+
+    }
+
+}
+
+function onDocumentKeyDown(event) {
+
     switch (event.keyCode) {
-        case 81: // Q
-            transform.setSpace(transform.space === "local" ? "world" : "local");
+
+        case 68: // D
+            isDelete = true;
+            rollOverMesh.material.visible = false;
             break;
 
-        case 17: // Ctrl
-            transform.setTranslationSnap(100);
-            transform.setRotationSnap(Math.degToRad(15));
+        case 67: // C
+            isControl = !isControl;
+            if (isControl) {
+                rollOverMesh.material.visible = false;
+            } else {
+                rollOverMesh.material.visible = true;
+                transform.detach();
+            }
+            render();
             break;
 
         case 87: // W
@@ -127,39 +268,48 @@ window.addEventListener('keydown', function (event) {
             transform.setMode("scale");
             break;
 
-        case 187:
-        case 107: // +, =, num+
-            transform.setSize(transform.size + 0.1);
-            break;
 
-        case 189:
-        case 109: // -, _, num-
-            transform.setSize(Math.max(transform.size - 0.1, 0.1));
-            break;
-
-        case 88: // X
-            transform.showX = !transform.showX;
-            break;
-
-        case 89: // Y
-            transform.showY = !transform.showY;
-            break;
-
-        case 90: // Z
-            transform.showZ = !transform.showZ;
-            break;
-
-        case 32: // Spacebar
-            transform.enabled = !transform.enabled;
-            break;
     }
-});
 
-window.addEventListener('keyup', function (event) {
+}
+
+function onDocumentKeyUp(event) {
+
     switch (event.keyCode) {
-        case 17: // Ctrl
-            transform.setTranslationSnap(null);
-            transform.setRotationSnap(null);
+
+        case 68: // D
+            isDelete = false;
+            rollOverMesh.material.visible = true;
             break;
+
     }
-});
+
+}
+
+
+// init all things
+function init() {
+
+    initBasic();
+
+    initLight();
+
+    initElement();
+
+    initControls();
+
+    initEventListener();
+
+}
+
+
+function render() {
+
+    renderer.render(scene, camera);
+
+}
+
+
+init();
+
+render();
