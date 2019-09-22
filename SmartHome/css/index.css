@@ -2,6 +2,7 @@ html, body {
     height: 100%;
     padding: 0;
     margin: 0;
+    overflow: hidden;
 }
 .main{
     height: 100%;
@@ -33,7 +34,7 @@ html, body {
 
 .view{
     height: 38px;
-    width: 170px;
+    width: 210px;
     background-color: white;
     position: absolute;
     top: 51px;
@@ -207,6 +208,7 @@ html, body {
     list-style: none;
     float: left;
     margin-left: 8px;
+    cursor:pointer
 }
 .tool-bar-right .panel-body img:hover{
     background-color: lightgrey;
@@ -247,7 +249,9 @@ html, body {
 
 
 .webgl{
-    height: 100%;
     width:100%;
+    height: 100%;
+
     position: relative;
 }
+
