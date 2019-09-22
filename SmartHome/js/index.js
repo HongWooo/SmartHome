@@ -25,7 +25,10 @@ $(document).ready(function () {
     $("#render").click(function () {
         alert("渲染");
     });
-
+    
+    $("#view-vr").click(function () {
+        alert("VR");
+    });
     //左边工具栏切换
     $(".tool-bar-left ul").on("click","li",function () {
         $(".tool-bar-right").css("display","block");
@@ -50,9 +53,12 @@ $(document).ready(function () {
         }else {
             $(".tool-bar-right-header-1 .tool-bar-right-content .panel").css("display","block");
         }
+    });
 
+    //点击左侧图片
+    $(".list-item").click(function () {
+        console.log($(this).children('p').text());
     })
-
 });
 
 
