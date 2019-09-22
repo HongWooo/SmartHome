@@ -295,15 +295,15 @@ function onDocumentMouseMove(event) {
 
         if (isControl || isDelete) {
 
-            if (INTERSECTED != intersects[0].object) {
+            // if (INTERSECTED != intersects[0].object) {
 
-                if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+            //     if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-                INTERSECTED = intersects[0].object;
-                INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-                INTERSECTED.material.emissive.setHex(0xff0000);
+            //     INTERSECTED = intersects[0].object;
+            //     INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            //     INTERSECTED.material.emissive.setHex(0xff0000);
 
-            }
+            // }
 
         } else {
 
@@ -314,9 +314,9 @@ function onDocumentMouseMove(event) {
 
     } else {
 
-        if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+        // if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
 
-        INTERSECTED = null;
+        // INTERSECTED = null;
 
     }
 
@@ -393,9 +393,9 @@ function onDocumentKeyDown(event) {
         case 67: // C
             isControl = !isControl;
             if (isControl) {
-                tempElement.material.visible = false;
+                // tempElement.material.visible = false;
             } else {
-                tempElement.material.visible = true;
+                // tempElement.material.visible = true;
                 transform.detach();
             }
             render();
