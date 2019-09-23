@@ -77,7 +77,7 @@ function initControls() {
 
 
 // element
-var objects = [], tempElement, plane;
+var objects = [], tempElement, plane, boxHelper;
 var mouse, raycaster, isDelete = false, isControl = false;
 
 function initElement() {
@@ -94,6 +94,10 @@ function initElement() {
 
     var gridHelper = new THREE.GridHelper(2000, 40);
     scene.add(gridHelper);
+
+    boxHelper = new THREE.BoxHelper(camera, 0xff0000);
+    boxHelper.visible = false;
+    scene.add(boxHelper);
 
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();
@@ -148,40 +152,6 @@ function setElementName(name) {
         }
     );
 
-
-    // var mtlLoader = new MTLLoader();
-    // mtlLoader.load(
-    //     '../modules/mtl/' + elementMap[name][1],
-    //     function (material) {
-    //         var objLoader = new OBJLoader();
-    //         objLoader.setMaterials(material);
-    //         objLoader.load(
-    //             // resource URL
-    //             '../modules/obj/' + elementMap[name][0],
-    //             // called when resource is loaded
-    //             function (object) {
-
-    //                 scene.remove(tempElement);
-    //                 tempElement = object;
-    //                 scene.add(tempElement);
-
-    //             },
-    //             // called when loading is in progresses
-    //             function (xhr) {
-
-    //                 console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-    //             },
-    //             // called when loading has errors
-    //             function (error) {
-
-    //                 console.log('An error happened');
-
-    //             }
-    //         );
-    //     }
-    // );
-
 }
 
 function buildElement(name, intersect) {
@@ -196,10 +166,11 @@ function buildElement(name, intersect) {
         function (object) {
 
             object.position.copy(intersect.point).add(intersect.face.normal);
-            // object.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
             object.castShadow = true;
             scene.add(object);
-            objects.push(object);
+            for (var i = 0; i < object.children.length; i++) {
+                objects.push(object.children[i]);
+            }
 
         },
         // called when loading is in progresses
@@ -216,42 +187,6 @@ function buildElement(name, intersect) {
         }
     );
 
-
-    // var mtlLoader = new MTLLoader();
-    // mtlLoader.load(
-    //     '../modules/mtl/' + elementMap[name][1],
-    //     function (material) {
-    //         var objLoader = new OBJLoader();
-    //         objLoader.setMaterials(material);
-    //         objLoader.load(
-    //             // resource URL
-    //             '../modules/obj/' + elementMap[name][0],
-    //             // called when resource is loaded
-    //             function (object) {
-
-    //                 object.position.copy(intersect.point).add(intersect.face.normal);
-    //                 // object.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-    //                 object.castShadow = true;
-    //                 scene.add(object);
-    //                 objects.push(object);
-
-    //             },
-    //             // called when loading is in progresses
-    //             function (xhr) {
-
-    //                 console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-    //             },
-    //             // called when loading has errors
-    //             function (error) {
-
-    //                 console.log('An error happened');
-
-    //             }
-    //         );
-    //     }
-    // );
-
 }
 
 // event listener
@@ -262,7 +197,6 @@ function initEventListener() {
     document.addEventListener('mousemove', onDocumentMouseMove, false);
     document.addEventListener('click', onDocumentClick, false);
     document.addEventListener('keydown', onDocumentKeyDown, false);
-    document.addEventListener('keyup', onDocumentKeyUp, false);
 
 }
 
@@ -276,8 +210,6 @@ function onWindowResize() {
     render();
 
 }
-
-var INTERSECTED;
 
 function onDocumentMouseMove(event) {
 
@@ -293,30 +225,22 @@ function onDocumentMouseMove(event) {
 
         var intersect = intersects[0];
 
-        if (isControl || isDelete) {
+        if ((isDelete || isControl) && intersect.object != plane) {
 
-            // if (INTERSECTED != intersects[0].object) {
+            boxHelper.setFromObject(intersect.object.parent);
+            boxHelper.update();
+            boxHelper.visible = true;
 
-            //     if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-
-            //     INTERSECTED = intersects[0].object;
-            //     INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            //     INTERSECTED.material.emissive.setHex(0xff0000);
-
-            // }
-
-        } else {
+        } else if (intersect.object == plane) {
 
             tempElement.position.copy(intersect.point).add(intersect.face.normal);
-            // tempElement.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+            boxHelper.visible = false;
 
         }
 
     } else {
 
-        // if (INTERSECTED) INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
-
-        // INTERSECTED = null;
+        boxHelper.visible = false;
 
     }
 
@@ -342,34 +266,32 @@ function onDocumentClick(event) {
 
             if (intersect.object != plane) {
 
-                scene.remove(intersect.object);
+                var temp = intersect.object.parent;
 
-                objects.splice(objects.indexOf(intersect.object), 1);
+                for (var i = 0; i < objects.length;) {
+                    if (temp == objects[i].parent)
+                        objects.splice(i, 1);
+                    else
+                        i++;
+                }
+
+                scene.remove(intersect.object.parent);
 
             }
 
         } else if (!isControl) {
 
-            buildElement(elementName, intersect);
+            if (intersect.object == plane) {
 
-            // var voxel = new THREE.Mesh(
-            //     new THREE.BoxBufferGeometry(50, 50, 50),
-            //     new THREE.MeshLambertMaterial({
-            //         color: 0x4682B4,
-            //     }),
-            // );
-            // voxel.position.copy(intersect.point).add(intersect.face.normal);
-            // voxel.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-            // voxel.castShadow = true;
-            // scene.add(voxel);
+                buildElement(elementName, intersect);
 
-            // objects.push(voxel);
+            }
 
         } else if (isControl) {
 
             if (intersect.object != plane) {
 
-                transform.attach(intersect.object);
+                transform.attach(intersect.object.parent);
 
             }
 
@@ -386,16 +308,24 @@ function onDocumentKeyDown(event) {
     switch (event.keyCode) {
 
         case 68: // D
-            isDelete = true;
-            tempElement.material.visible = false;
+            isDelete = !isDelete;
+            if (isDelete) {
+                scene.remove(tempElement);
+            } else {
+                boxHelper.visible = false;
+                scene.add(tempElement);
+                transform.detach();
+            }
+            render();
             break;
 
         case 67: // C
             isControl = !isControl;
             if (isControl) {
-                // tempElement.material.visible = false;
+                scene.remove(tempElement);
             } else {
-                // tempElement.material.visible = true;
+                boxHelper.visible = false;
+                scene.add(tempElement);
                 transform.detach();
             }
             render();
@@ -414,19 +344,6 @@ function onDocumentKeyDown(event) {
             setElementName('chair');
             break;
 
-
-    }
-
-}
-
-function onDocumentKeyUp(event) {
-
-    switch (event.keyCode) {
-
-        case 68: // D
-            isDelete = false;
-            tempElement.material.visible = true;
-            break;
 
     }
 
