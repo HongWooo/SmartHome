@@ -116,7 +116,7 @@ function initElement() {
 
 var elementMap = {
     'chair': ['AM199_Set_01.obj', 'AM199_Set_01.mtl']
-}
+};
 
 var elementName;
 
@@ -129,7 +129,7 @@ function setElementName(name) {
     // load a resource
     loader.load(
         // resource URL
-        '../modules/obj/' + elementMap[name][0],
+        'modules/obj/' + elementMap[name][0],
         // called when resource is loaded
         function (object) {
 
@@ -161,7 +161,7 @@ function buildElement(name, intersect) {
     // load a resource
     loader.load(
         // resource URL
-        '../modules/obj/' + elementMap[name][0],
+        'modules/obj/' + elementMap[name][0],
         // called when resource is loaded
         function (object) {
 
@@ -371,7 +371,12 @@ function render() {
     renderer.render(scene, camera);
 
 }
+//点击左侧图片
+$(".list-item").click(function () {
+    console.log($(this).children('p').text());
 
+    setElementName('chair');
+})
 
 init();
 
