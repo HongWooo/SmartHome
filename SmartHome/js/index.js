@@ -1,5 +1,7 @@
 
 $(document).ready(function () {
+
+    
     $("#save").click(function () {
         alert("保存!")
     });
@@ -8,20 +10,6 @@ $(document).ready(function () {
         alert("退出!")
     });
 
-    //切换观察视角
-    $("#view-2d").click(function () {
-        //切换到2D
-        $(this).addClass("active");
-
-        $("#view-3d").removeClass("active");
-        //do something
-    });
-    $("#view-3d").click(function () {
-        //切换到3D
-        $(this).addClass("active");
-        $("#view-2d").removeClass("active");
-        //do something
-    });
 
     $("#render").click(function () {
         alert("渲染");
@@ -61,6 +49,8 @@ $(document).ready(function () {
     //     console.log($(this).children('p').text());
     //     setElementName('chair');
     // })
+    //切换观察视角
+
 });
 
 
