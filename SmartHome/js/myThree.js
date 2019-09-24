@@ -116,7 +116,7 @@ function initElement() {
 
 var elementMap = {
     'chair': ['AM199_Set_01.obj', 'AM199_Set_01.mtl']
-}
+};
 
 var elementName;
 
@@ -371,7 +371,12 @@ function render() {
     renderer.render(scene, camera);
 
 }
+//点击左侧图片
+$(".list-item").click(function () {
+    console.log($(this).children('p').text());
 
+    setElementName('chair');
+})
 
 init();
 

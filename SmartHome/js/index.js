@@ -12,6 +12,7 @@ $(document).ready(function () {
     $("#view-2d").click(function () {
         //切换到2D
         $(this).addClass("active");
+
         $("#view-3d").removeClass("active");
         //do something
     });
@@ -55,10 +56,11 @@ $(document).ready(function () {
         }
     });
 
-    //点击左侧图片
-    $(".list-item").click(function () {
-        console.log($(this).children('p').text());
-    })
+    // 点击左侧图片
+    // $(".list-item").click(function () {
+    //     console.log($(this).children('p').text());
+    //     setElementName('chair');
+    // })
 });
 
 
