@@ -129,7 +129,7 @@ function setElementName(name) {
     // load a resource
     loader.load(
         // resource URL
-        '../modules/obj/' + elementMap[name][0],
+        'modules/obj/' + elementMap[name][0],
         // called when resource is loaded
         function (object) {
 
@@ -161,7 +161,7 @@ function buildElement(name, intersect) {
     // load a resource
     loader.load(
         // resource URL
-        '../modules/obj/' + elementMap[name][0],
+        'modules/obj/' + elementMap[name][0],
         // called when resource is loaded
         function (object) {
 
