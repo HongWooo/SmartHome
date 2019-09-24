@@ -376,7 +376,7 @@ $(".list-item").click(function () {
     console.log($(this).children('p').text());
 
     setElementName('chair');
-})
+});
 
 init();
 

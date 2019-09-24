@@ -46,75 +46,75 @@ function switchdoors() {
 //     gui.add(controls,'模式').listen();
 
 // basic
-var renderer, scene, camera;
+var renderer, scene2, camera2;
 
-function initBasic() {
+function initBasic2() {
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(document.getElementById("2D_canvas").offsetWidth, document.getElementById("2D_canvas").offsetHeight);
+    renderer.setSize(document.getElementById("canvas").offsetWidth, document.getElementById("canvas").offsetHeight);
     renderer.shadowMap.enabled = true;
-    document.getElementById("2D_canvas").appendChild(renderer.domElement);
+    document.getElementById("canvas").appendChild(renderer.domElement);
 
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xf0f0f0);
+    scene2 = new THREE.Scene();
+    scene2.background = new THREE.Color(0xf0f0f0);
 
-    camera = new THREE.PerspectiveCamera(60, document.getElementById("2D_canvas").offsetWidth / document.getElementById("2D_canvas").offsetHeight, 1, 10000);
-    camera.position.set(0, 800, 0);
-    camera.lookAt(0, 0, 0);
+    camera2 = new THREE.PerspectiveCamera(60, document.getElementById("canvas").offsetWidth / document.getElementById("canvas").offsetHeight, 1, 10000);
+    camera2.position.set(0, 800, 0);
+    camera2.lookAt(0, 0, 0);
 
 }
 
 
 // light
-var ambientLight;
+var ambientLight2;
 
-function initLight() {
+function initLight2() {
 
-    ambientLight = new THREE.AmbientLight(0xffffff);
-    scene.add(ambientLight);
+    ambientLight2 = new THREE.AmbientLight(0xffffff);
+    scene2.add(ambientLight2);
 
 }
 
 
 // control
-var orbit;
+var orbit2;
 
-function initOrbitControls() {
+function initOrbitControls2() {
 
-    orbit = new OrbitControls(camera, renderer.domElement);
-    orbit.enableRotate = false;
-    orbit.update();
-    orbit.addEventListener('change', render);
+    orbit2 = new OrbitControls(camera2, renderer.domElement);
+    orbit2.enableRotate = false;
+    orbit2.update();
+    orbit2.addEventListener('change', render2);
 
 }
 
-function initControls() {
+function initControls2() {
 
-    initOrbitControls();
+    initOrbitControls2();
 
 }
 
 
 // element
-var objects = [];
-var rollOverMesh;
-var plane;
-var mouse, raycaster;
+var objects2 = [];
+var rollOverMesh2;
+var plane2;
+var mouse2, raycaster2;
 
-function initElement() {
+function initElement2() {
 
     var gridHelper = new THREE.GridHelper(1000, 20);
-    scene.add(gridHelper);
+    scene2.add(gridHelper);
 
     var planeGeo = new THREE.PlaneBufferGeometry(1000, 1000);
     planeGeo.rotateX(- Math.PI / 2);
-    plane = new THREE.Mesh(planeGeo, new THREE.MeshLambertMaterial({
+    plane2 = new THREE.Mesh(planeGeo, new THREE.MeshLambertMaterial({
         color: 0xB0C4DE,
         visible: false,
     }));
-    objects.push(plane);
-    scene.add(plane);
+    objects2.push(plane2);
+    scene2.add(plane2);
 
     var rollOverGeo = new THREE.PlaneBufferGeometry(50, 50, 50);
     rollOverGeo.rotateX(-Math.PI / 2);
@@ -123,119 +123,119 @@ function initElement() {
         opacity: 0.5,
         transparent: true,
     });
-    rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
-    scene.add(rollOverMesh);
+    rollOverMesh2 = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+    scene2.add(rollOverMesh2);
 
-    raycaster = new THREE.Raycaster();
-    mouse = new THREE.Vector2();
+    raycaster2 = new THREE.Raycaster();
+    mouse2 = new THREE.Vector2();
 
 }
 
 // event listener
-function initEventListener() {
+function initEventListener2() {
 
-    window.addEventListener('resize', onWindowResize, false);
-    document.addEventListener('mousemove', onDocumentMouseMove, false);
-    document.addEventListener('click', onDocumentClick, false);
-
-}
-
-function onWindowResize() {
-
-    camera.aspect = document.getElementById("2D_canvas").offsetWidth / document.getElementById("2D_canvas").offsetHeight;
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(document.getElementById("2D_canvas").offsetWidth, document.getElementById("2D_canvas").offsetHeight);
-
-    render();
+    window.addEventListener('resize', onWindowResize2, false);
+    document.addEventListener('mousemove', onDocumentMouseMove2, false);
+    document.addEventListener('click', onDocumentClick2, false);
 
 }
 
+function onWindowResize2() {
 
-var cnt = 0;//记录鼠标点击次数
-var point1 = new THREE.Vector3();
-var point2 = new THREE.Vector3();
-var tempLine = null;//线
+    camera2.aspect = document.getElementById("canvas").offsetWidth / document.getElementById("canvas").offsetHeight;
+    camera2.updateProjectionMatrix();
 
-function onDocumentMouseMove(event) {
+    renderer.setSize(document.getElementById("canvas").offsetWidth, document.getElementById("canvas").offsetHeight);
+
+    render2();
+
+}
+
+
+var cnt2 = 0;//记录鼠标点击次数
+var point12 = new THREE.Vector3();
+var point22 = new THREE.Vector3();
+var tempLine2 = null;//线
+
+function onDocumentMouseMove2(event) {
 
     event.preventDefault();
 
-    mouse.set((event.offsetX / document.getElementById("2D_canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("2D_canvas").offsetHeight) * 2 + 1);
+    mouse2.set((event.offsetX / document.getElementById("canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("canvas").offsetHeight) * 2 + 1);
 
-    raycaster.setFromCamera(mouse, camera);
+    raycaster2.setFromCamera(mouse2, camera2);
 
-    var intersects = raycaster.intersectObjects(objects);
+    var intersects = raycaster2.intersectObjects(objects2);
 
     if (intersects.length > 0) {
 
         var intersect = intersects[0];
 
         //选择红色方块
-        rollOverMesh.position.copy(intersect.point).add(intersect.face.normal);
-        rollOverMesh.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-        rollOverMesh.position.y = 0;
+        rollOverMesh2.position.copy(intersect.point).add(intersect.face.normal);
+        rollOverMesh2.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+        rollOverMesh2.position.y = 0;
 
         //画线
-        if (cnt === 1) {
+        if (cnt2 === 1) {
 
-            if (tempLine)
-                scene.remove(tempLine);
+            if (tempLine2)
+                scene2.remove(tempLine2);
 
 
             //画窗户
             if(mode === 1){
-                point2.copy(intersect.point).add(intersect.face.normal);
-                point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                point2.y = 0;
+                point22.copy(intersect.point).add(intersect.face.normal);
+                point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                point22.y = 0;
 
                 var geometry = new THREE.Geometry();
                 geometry.vertices.push(point1);
                 geometry.vertices.push(point2);
-                tempLine = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0x000000,dashSize:10,gapSize:1,scale:0.5}));
-                tempLine.computeLineDistances();
+                tempLine2 = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0x000000,dashSize:10,gapSize:1,scale:0.5}));
+                tempLine2.computeLineDistances();
             }
             else if (mode === 0){//画墙壁
-                    point2.copy(intersect.point).add(intersect.face.normal);
-                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point2.y = 0;
+                    point22.copy(intersect.point).add(intersect.face.normal);
+                    point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point22.y = 0;
 
                     var geometry = new THREE.Geometry();
-                    geometry.vertices.push(point1);
-                    geometry.vertices.push(point2);
-                    tempLine = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0x70dbdb,scale:0.1}));
-                    tempLine.computeLineDistances();
+                    geometry.vertices.push(point12);
+                    geometry.vertices.push(point22);
+                    tempLine2 = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0x70dbdb,scale:0.1}));
+                    tempLine2.computeLineDistances();
                 }
                 else{//画门板
-                    point2.copy(intersect.point).add(intersect.face.normal);
-                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point2.y = 0;
+                    point22.copy(intersect.point).add(intersect.face.normal);
+                    point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point22.y = 0;
 
                     var geometry = new THREE.Geometry();
-                    geometry.vertices.push(point1);
-                    geometry.vertices.push(point2);
-                    tempLine = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0xff0000,dashSize:10,gapSize:1,scale:0.5}));
-                    tempLine.computeLineDistances();
+                    geometry.vertices.push(point12);
+                    geometry.vertices.push(point22);
+                    tempLine2 = new THREE.Line(geometry,new THREE.LineDashedMaterial({color:0xff0000,dashSize:10,gapSize:1,scale:0.5}));
+                    tempLine2.computeLineDistances();
                 }
-            scene.add(tempLine);
-            renderer.render(scene, camera);
+            scene2.add(tempLine2);
+            renderer.render(scene2, camera2);
         }
 
     }
 
-    render();
+    render2();
 
 }
 
-function onDocumentClick(event) {
+function onDocumentClick2(event) {
 
     event.preventDefault();
 
-    mouse.set((event.offsetX / document.getElementById("2D_canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("2D_canvas").offsetHeight) * 2 + 1);
+    mouse2.set((event.offsetX / document.getElementById("canvas").offsetWidth) * 2 - 1, - (event.offsetY / document.getElementById("canvas").offsetHeight) * 2 + 1);
 
-    raycaster.setFromCamera(mouse, camera);
+    raycaster2.setFromCamera(mouse2, camera2);
 
-    var intersects = raycaster.intersectObjects(objects);
+    var intersects = raycaster2.intersectObjects(objects2);
 
     if (intersects.length > 0) {
 
@@ -243,59 +243,59 @@ function onDocumentClick(event) {
 
         //画墙壁
         if (mode === 0) {
-            switch (cnt) {
+            switch (cnt2) {
                 case 0:
-                    point1.copy(intersect.point).add(intersect.face.normal);
-                    point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point1.y = 0;
+                    point12.copy(intersect.point).add(intersect.face.normal);
+                    point12.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point12.y = 0;
                     break;
 
                 case 1:
-                    point2.copy(intersect.point).add(intersect.face.normal);
-                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point2.y = 0;
+                    point22.copy(intersect.point).add(intersect.face.normal);
+                    point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point22.y = 0;
                     // var material = new THREE.LineBasicMaterial({ color: 0x855e42 });
                     var geometry = new THREE.Geometry();
-                    geometry.vertices.push(point1);
-                    geometry.vertices.push(point2);
+                    geometry.vertices.push(point12);
+                    geometry.vertices.push(point22);
                     var line = new THREE.Line(geometry, new THREE.LineDashedMaterial({color: 0x70dbdb, scale: 0.1}));
                     line.computeLineDistances();
                     // var line = new THREE.Line(geometry, material);
-                    scene.add(line);
-                    renderer.render(scene, camera);
+                    scene2.add(line);
+                    renderer.render(scene2, camera2);
 
                     var a = new figure();
-                    a.point_1 = point1;
-                    a.point_2 = point2;
+                    a.point_1 = point12;
+                    a.point_2 = point22;
                     a.sorts = 0;
                     feature.push(a);
 
                     break;
             }
         } else if (mode === 1) {//画窗户
-            switch (cnt) {
+            switch (cnt2) {
                 case 0:
-                    point1.copy(intersect.point).add(intersect.face.normal);
-                    point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point1.y = 0;
+                    point12.copy(intersect.point).add(intersect.face.normal);
+                    point12.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point12.y = 0;
                     break;
 
                 case 1:
-                    point2.copy(intersect.point).add(intersect.face.normal);
-                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point2.y = 0;
+                    point22.copy(intersect.point).add(intersect.face.normal);
+                    point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point22.y = 0;
 
                     var material = new THREE.LineBasicMaterial({color: 0x000000,});
                     var geometry = new THREE.Geometry();
-                    geometry.vertices.push(point1);
-                    geometry.vertices.push(point2);
+                    geometry.vertices.push(point12);
+                    geometry.vertices.push(point22);
                     var line = new THREE.Line(geometry, material);
-                    scene.add(line);
-                    renderer.render(scene, camera);
+                    scene2.add(line);
+                    renderer2.render(scene2, camera2);
 
                     var a = new figure();
-                    a.point_1 = point1;
-                    a.point_2 = point2;
+                    a.point_1 = point12;
+                    a.point_2 = point22;
                     a.sorts = 1;
                     feature.push(a);
 
@@ -304,29 +304,29 @@ function onDocumentClick(event) {
                     break;
             }
         } else {//画门板
-            switch (cnt) {
+            switch (cnt2) {
                 case 0:
-                    point1.copy(intersect.point).add(intersect.face.normal);
-                    point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point1.y = 0;
+                    point12.copy(intersect.point).add(intersect.face.normal);
+                    point12.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point12.y = 0;
                     break;
 
                 case 1:
-                    point2.copy(intersect.point).add(intersect.face.normal);
-                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-                    point2.y = 0;
+                    point22.copy(intersect.point).add(intersect.face.normal);
+                    point22.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point22.y = 0;
 
                     var material = new THREE.LineBasicMaterial({color: 0xff0000,});
                     var geometry = new THREE.Geometry();
-                    geometry.vertices.push(point1);
-                    geometry.vertices.push(point2);
+                    geometry.vertices.push(point12);
+                    geometry.vertices.push(point22);
                     var line = new THREE.Line(geometry, material);
-                    scene.add(line);
-                    renderer.render(scene, camera);
+                    scene2.add(line);
+                    renderer.render(scene2, camera2);
 
                     var a = new figure();
-                    a.point_1 = point1;
-                    a.point_2 = point2;
+                    a.point_1 = point12;
+                    a.point_2 = point22;
                     a.sorts = 2;
                     feature.push(a);
 
@@ -337,36 +337,53 @@ function onDocumentClick(event) {
         }
 
 
-        cnt = (cnt + 1) % 2;
+        cnt2 = (cnt2 + 1) % 2;
 
-        render();
+        render2();
 
     }
 }
 // init all things
-    function init() {
+    function init2() {
 
-        initBasic();
+        initBasic2();
 
-        initLight();
+        initLight2();
 
-        initElement();
+        initElement2();
 
-        initControls();
+        initControls2();
 
-        initEventListener();
-
-    }
-
-
-    function render() {
-
-        renderer.render(scene, camera);
-
+        initEventListener2();
 
     }
 
 
+    function render2() {
+
+        renderer.render(scene2, camera2);
+
+
+    }
+
+
+
+$("#view-2d").click(function () {
+    //切换到2D
+    $(this).addClass("active");
+
+    $("#view-3d").removeClass("active");
+    //do something
+    init2();
+    render2();
+});
+
+
+$("#view-3d").click(function () {
+    //切换到3D
+    $(this).addClass("active");
+    $("#view-2d").removeClass("active");
+    //do something
     init();
-
     render();
+});
