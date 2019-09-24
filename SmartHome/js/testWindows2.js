@@ -116,7 +116,7 @@ function initElement2() {
     objects2.push(plane2);
     scene2.add(plane2);
 
-    var rollOverGeo = new THREE.PlaneBufferGeometry(50, 50, 50);
+    var rollOverGeo = new THREE.PlaneBufferGeometry(50, 50);
     rollOverGeo.rotateX(-Math.PI / 2);
     var rollOverMaterial = new THREE.MeshLambertMaterial({
         color: 0xff0000,

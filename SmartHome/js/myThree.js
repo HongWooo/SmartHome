@@ -6,7 +6,33 @@ import { MTLLoader } from './node_modules/three/examples/jsm/loaders/MTLLoader.j
 
 
 // basic
-var renderer, scene, camera;
+var feature = [];
+
+function figure() {
+    this.point_1 = null;
+    this.point_2 = null;
+    this.sorts = 0;//0为墙壁，1为窗户,2为门板
+}
+
+var mode = 0;//0为绘制墙面，1为绘制窗户，2为绘制门板
+
+//切换至绘制墙壁模式
+function switchwalls() {
+    mode = 0;
+}
+
+//切换至绘制窗户模式
+function switchwindows() {
+    mode = 1;
+}
+
+//切换至绘制门板模式
+function switchdoors() {
+    mode = 2;
+}
+
+
+var renderer, scene, camera, type = 2;
 
 function initBasic() {
 
@@ -20,7 +46,7 @@ function initBasic() {
     scene.background = new THREE.Color(0xf0f0f0);
 
     camera = new THREE.PerspectiveCamera(60, document.getElementById("canvas").offsetWidth / document.getElementById("canvas").offsetHeight, 1, 10000);
-    camera.position.set(500, 800, 1300);
+    camera.position.set(0, 1600, 0);
     camera.lookAt(0, 0, 0);
 
 }
@@ -48,6 +74,7 @@ var orbit, transform;
 function initOrbitControls() {
 
     orbit = new OrbitControls(camera, renderer.domElement);
+    orbit.enableRotate = false;
     orbit.update();
     orbit.addEventListener('change', render);
 
@@ -77,19 +104,19 @@ function initControls() {
 
 
 // element
-var objects = [], tempElement, plane, boxHelper;
+var objects = [], objects2 = [], tempElement, plane, boxHelper;
 var mouse, raycaster, isDelete = false, isControl = false;
 
 function initElement() {
 
-    tempElement = new THREE.Mesh(
-        new THREE.BoxBufferGeometry(50, 50, 50),
-        new THREE.MeshLambertMaterial({
-            color: 0xff0000,
-            opacity: 0.5,
-            transparent: true,
-        })
-    );
+    var tempElementGeo = new THREE.PlaneBufferGeometry(50, 50);
+    tempElementGeo.rotateX(-Math.PI / 2);
+    var tempElementMTL = new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        opacity: 0.5,
+        transparent: true,
+    });
+    tempElement = new THREE.Mesh(tempElementGeo, tempElementMTL);
     scene.add(tempElement);
 
     var gridHelper = new THREE.GridHelper(2000, 40);
@@ -111,6 +138,7 @@ function initElement() {
     plane.receiveShadow = true;
     scene.add(plane);
     objects.push(plane);
+    objects2.push(plane);
 
 }
 
@@ -211,6 +239,11 @@ function onWindowResize() {
 
 }
 
+var cnt = 0;//记录鼠标点击次数
+var point1 = new THREE.Vector3();
+var point2 = new THREE.Vector3();
+var tempLine = null;//线
+
 function onDocumentMouseMove(event) {
 
     event.preventDefault();
@@ -219,28 +252,98 @@ function onDocumentMouseMove(event) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects(objects);
+    if (type == 3) {
+        var intersects = raycaster.intersectObjects(objects);
 
-    if (intersects.length > 0) {
+        if (intersects.length > 0) {
 
-        var intersect = intersects[0];
+            var intersect = intersects[0];
 
-        if ((isDelete || isControl) && intersect.object != plane) {
+            if ((isDelete || isControl) && intersect.object != plane) {
 
-            boxHelper.setFromObject(intersect.object.parent);
-            boxHelper.update();
-            boxHelper.visible = true;
+                boxHelper.setFromObject(intersect.object.parent);
+                boxHelper.update();
+                boxHelper.visible = true;
 
-        } else if (intersect.object == plane) {
+            } else if (intersect.object == plane) {
 
-            tempElement.position.copy(intersect.point).add(intersect.face.normal);
+                tempElement.position.copy(intersect.point).add(intersect.face.normal);
+                boxHelper.visible = false;
+
+            }
+
+        } else {
+
             boxHelper.visible = false;
 
         }
 
-    } else {
+    } else if (type == 2) {
 
-        boxHelper.visible = false;
+        var intersects = raycaster.intersectObjects(objects2);
+
+        if (intersects.length > 0) {
+
+            var intersect = intersects[0];
+
+            //选择红色方块
+            tempElement.position.copy(intersect.point).add(intersect.face.normal);
+            tempElement.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+            tempElement.position.y = 0;
+
+            //画线
+            if (cnt == 1) {
+
+                if (tempLine) {
+
+                    scene.remove(tempLine);
+
+                }
+
+                //画窗户
+                if (mode == 1) {
+
+                    point2.copy(intersect.point).add(intersect.face.normal);
+                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point2.y = 0;
+
+                    var geometry = new THREE.Geometry();
+                    geometry.vertices.push(point1);
+                    geometry.vertices.push(point2);
+                    tempLine = new THREE.Line(geometry, new THREE.LineDashedMaterial({ color: 0x000000, dashSize: 10, gapSize: 1, scale: 0.5 }));
+                    tempLine.computeLineDistances();
+
+                } else if (mode === 0) {//画墙壁
+
+                    point2.copy(intersect.point).add(intersect.face.normal);
+                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point2.y = 0;
+
+                    var geometry = new THREE.Geometry();
+                    geometry.vertices.push(point1);
+                    geometry.vertices.push(point2);
+                    tempLine = new THREE.Line(geometry, new THREE.LineDashedMaterial({ color: 0x70dbdb, scale: 0.1 }));
+                    tempLine.computeLineDistances();
+
+                } else {//画门板
+
+                    point2.copy(intersect.point).add(intersect.face.normal);
+                    point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                    point2.y = 0;
+
+                    var geometry = new THREE.Geometry();
+                    geometry.vertices.push(point1);
+                    geometry.vertices.push(point2);
+                    tempLine = new THREE.Line(geometry, new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 10, gapSize: 1, scale: 0.5 }));
+                    tempLine2.computeLineDistances();
+
+                }
+
+                scene.add(tempLine);
+
+            }
+
+        }
 
     }
 
@@ -256,93 +359,217 @@ function onDocumentClick(event) {
 
     raycaster.setFromCamera(mouse, camera);
 
-    var intersects = raycaster.intersectObjects(objects);
+    if (type == 3) {
 
-    if (intersects.length > 0) {
+        var intersects = raycaster.intersectObjects(objects);
 
-        var intersect = intersects[0];
+        if (intersects.length > 0) {
 
-        if (isDelete && !isControl) {
+            var intersect = intersects[0];
 
-            if (intersect.object != plane) {
+            if (isDelete && !isControl) {
 
-                var temp = intersect.object.parent;
+                if (intersect.object != plane) {
 
-                for (var i = 0; i < objects.length;) {
-                    if (temp == objects[i].parent)
-                        objects.splice(i, 1);
-                    else
-                        i++;
+                    var temp = intersect.object.parent;
+
+                    for (var i = 0; i < objects.length;) {
+                        if (temp == objects[i].parent)
+                            objects.splice(i, 1);
+                        else
+                            i++;
+                    }
+
+                    scene.remove(intersect.object.parent);
+
                 }
 
-                scene.remove(intersect.object.parent);
+            } else if (!isControl) {
 
-            }
+                if (intersect.object == plane) {
 
-        } else if (!isControl) {
+                    buildElement(elementName, intersect);
 
-            if (intersect.object == plane) {
+                }
 
-                buildElement(elementName, intersect);
+            } else if (isControl) {
 
-            }
+                if (intersect.object != plane) {
 
-        } else if (isControl) {
+                    transform.attach(intersect.object.parent);
 
-            if (intersect.object != plane) {
-
-                transform.attach(intersect.object.parent);
+                }
 
             }
 
         }
 
-        render();
+    } else if (type == 2) {
+
+        var intersects = raycaster.intersectObjects(objects2);
+
+        if (intersects.length > 0) {
+
+            var intersect = intersects[0];
+
+            //画墙壁
+            if (mode === 0) {
+
+                switch (cnt) {
+
+                    case 0:
+                        point1.copy(intersect.point).add(intersect.face.normal);
+                        point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point1.y = 0;
+                        break;
+
+                    case 1:
+                        point2.copy(intersect.point).add(intersect.face.normal);
+                        point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point2.y = 0;
+
+                        var geometry = new THREE.Geometry();
+                        geometry.vertices.push(point1);
+                        geometry.vertices.push(point2);
+                        var line = new THREE.Line(geometry, new THREE.LineDashedMaterial({ color: 0x70dbdb, scale: 0.1 }));
+                        line.computeLineDistances();
+                        scene.add(line);
+                        objects2.push(line);
+
+                        var a = new figure();
+                        a.point_1 = point1;
+                        a.point_2 = point2;
+                        a.sorts = 0;
+                        feature.push(a);
+
+                        break;
+
+                }
+
+            } else if (mode === 1) {//画窗户
+
+                switch (cnt) {
+
+                    case 0:
+                        point1.copy(intersect.point).add(intersect.face.normal);
+                        point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point1.y = 0;
+                        break;
+
+                    case 1:
+                        point2.copy(intersect.point).add(intersect.face.normal);
+                        point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point2.y = 0;
+
+                        var material = new THREE.LineBasicMaterial({ color: 0x000000, });
+                        var geometry = new THREE.Geometry();
+                        geometry.vertices.push(point1);
+                        geometry.vertices.push(point2);
+                        var line = new THREE.Line(geometry, material);
+                        scene.add(line);
+                        objects2.push(line);
+
+                        var a = new figure();
+                        a.point_1 = point1;
+                        a.point_2 = point2;
+                        a.sorts = 1;
+                        feature.push(a);
+
+                        break;
+
+                }
+
+            } else {//画门板
+
+                switch (cnt) {
+
+                    case 0:
+                        point1.copy(intersect.point).add(intersect.face.normal);
+                        point1.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point1.y = 0;
+                        break;
+
+                    case 1:
+                        point2.copy(intersect.point).add(intersect.face.normal);
+                        point2.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+                        point2.y = 0;
+
+                        var material = new THREE.LineBasicMaterial({ color: 0xff0000, });
+                        var geometry = new THREE.Geometry();
+                        geometry.vertices.push(point1);
+                        geometry.vertices.push(point2);
+                        var line = new THREE.Line(geometry, material);
+                        scene.add(line);
+                        objects2.push(line);
+
+                        var a = new figure();
+                        a.point_1 = point1;
+                        a.point_2 = point2;
+                        a.sorts = 2;
+                        feature.push(a);
+
+                        break;
+
+                }
+
+            }
+
+            cnt = (cnt + 1) % 2;
+
+        }
 
     }
+
+    render();
 
 }
 
 function onDocumentKeyDown(event) {
 
-    switch (event.keyCode) {
+    if (type == 3) {
 
-        case 68: // D
-            isDelete = !isDelete;
-            if (isDelete) {
-                scene.remove(tempElement);
-            } else {
-                boxHelper.visible = false;
-                scene.add(tempElement);
-                transform.detach();
-            }
-            render();
-            break;
+        switch (event.keyCode) {
 
-        case 67: // C
-            isControl = !isControl;
-            if (isControl) {
-                scene.remove(tempElement);
-            } else {
-                boxHelper.visible = false;
-                scene.add(tempElement);
-                transform.detach();
-            }
-            render();
-            break;
+            case 68: // D
+                isDelete = !isDelete;
+                if (isDelete) {
+                    tempElement.visible = false;
+                } else {
+                    boxHelper.visible = false;
+                    tempElement.visible = true;
+                    transform.detach();
+                }
+                render();
+                break;
 
-        case 87: // W
-            transform.setMode("translate");
-            break;
+            case 67: // C
+                isControl = !isControl;
+                if (isControl) {
+                    tempElement.visible = false;
+                } else {
+                    boxHelper.visible = false;
+                    tempElement.visible = true;
+                    transform.detach();
+                }
+                render();
+                break;
 
-        case 69: // E
-            transform.setMode("rotate");
-            break;
+            case 87: // W
+                transform.setMode("translate");
+                break;
 
-        case 82: // R
-            // transform.setMode("scale");
-            setElementName('chair');
-            break;
+            case 69: // E
+                transform.setMode("rotate");
+                break;
+
+            case 82: // R
+                transform.setMode("scale");
+                break;
+
+        }
+
+    } else if (type == 2) {
+
 
 
     }
@@ -371,6 +598,7 @@ function render() {
     renderer.render(scene, camera);
 
 }
+
 //点击左侧图片
 $(".list-item").click(function () {
     console.log($(this).children('p').text());
@@ -381,3 +609,78 @@ $(".list-item").click(function () {
 init();
 
 render();
+
+$("#view-2d").click(function () {
+    //切换到2D
+    $(this).addClass("active");
+    $("#view-3d").removeClass("active");
+    //do something
+    camera.position.set(0, 1600, 0);
+    camera.lookAt(0, 0, 0);
+
+    orbit.enableRotate = false;
+    scene.remove(tempElement);
+
+    var tempElementGeo = new THREE.PlaneBufferGeometry(50, 50);
+    tempElementGeo.rotateX(-Math.PI / 2);
+    var tempElementMTL = new THREE.MeshLambertMaterial({
+        color: 0xff0000,
+        opacity: 0.5,
+        transparent: true,
+    });
+    tempElement = new THREE.Mesh(tempElementGeo, tempElementMTL);
+    scene.add(tempElement);
+
+    scene.children.forEach(child => {
+
+        if (child.type == "Line"){
+
+            child.visible = true;
+
+        }
+
+    });
+
+    type = 2;
+
+    render();
+
+});
+
+
+$("#view-3d").click(function () {
+    //切换到3D
+    $(this).addClass("active");
+    $("#view-2d").removeClass("active");
+    //do something
+    camera.position.set(500, 800, 1300);
+    camera.lookAt(0, 0, 0);
+
+    orbit.enableRotate = true;
+    scene.remove(tempElement);
+
+    tempElement = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(50, 50, 50),
+        new THREE.MeshLambertMaterial({
+            color: 0xff0000,
+            opacity: 0.5,
+            transparent: true,
+        })
+    );
+    scene.add(tempElement);
+
+    scene.children.forEach(child => {
+
+        if (child.type == "Line"){
+
+            child.visible = false;
+
+        }
+
+    });
+
+    type = 3;
+
+    render();
+
+});
