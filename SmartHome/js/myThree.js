@@ -16,21 +16,11 @@ function figure() {
 
 var mode = 0;//0为绘制墙面，1为绘制窗户，2为绘制门板
 
-//切换至绘制墙壁模式
-function switchwalls() {
-    mode = 0;
-}
+function setMode(x) {
 
-//切换至绘制窗户模式
-function switchwindows() {
-    mode = 1;
-}
+    mode = x;
 
-//切换至绘制门板模式
-function switchdoors() {
-    mode = 2;
 }
-
 
 var renderer, scene, camera, type = 2;
 
@@ -104,7 +94,7 @@ function initControls() {
 
 
 // element
-var objects = [], objects2 = [], tempElement, plane, boxHelper;
+var objects = [], objects2 = [], wallList = [], tempElement, plane, boxHelper;
 var mouse, raycaster, isDelete = false, isControl = false;
 
 function initElement() {
@@ -214,6 +204,42 @@ function buildElement(name, intersect) {
 
         }
     );
+
+}
+
+function buildWall(data) {
+
+    switch (data.sorts) {
+
+        case 0: //wall
+
+            break;
+
+        case 1: //window
+
+            break;
+
+        case 2: //door
+
+            break;
+
+    }
+
+}
+
+function buildWalls() {
+
+    for (var i = 0; i < wallList.length; i++) {
+
+        if (wallList[i] == 0) {
+
+            buildWall(feature[i]);
+
+            wallList[i] = 1;
+
+        }
+
+    }
 
 }
 
@@ -441,6 +467,7 @@ function onDocumentClick(event) {
                         a.point_2 = point2;
                         a.sorts = 0;
                         feature.push(a);
+                        wallList.push(0);
 
                         break;
 
@@ -474,6 +501,7 @@ function onDocumentClick(event) {
                         a.point_2 = point2;
                         a.sorts = 1;
                         feature.push(a);
+                        wallList.push(0);
 
                         break;
 
@@ -507,6 +535,7 @@ function onDocumentClick(event) {
                         a.point_2 = point2;
                         a.sorts = 2;
                         feature.push(a);
+                        wallList.push(0);
 
                         break;
 
@@ -599,6 +628,12 @@ function render() {
 
 }
 
+
+init();
+
+render();
+
+
 //点击左侧图片
 $(".list-item").click(function () {
     console.log($(this).children('p').text());
@@ -606,9 +641,6 @@ $(".list-item").click(function () {
     setElementName('chair');
 });
 
-init();
-
-render();
 
 $("#view-2d").click(function () {
     //切换到2D
@@ -633,13 +665,22 @@ $("#view-2d").click(function () {
 
     scene.children.forEach(child => {
 
-        if (child.type == "Line"){
+        if (child.type == "Line") {
 
             child.visible = true;
 
         }
 
+        if (child.type == "Mesh") {
+
+            child.visible = false;
+
+        }
+
     });
+
+    plane.visible = true;
+    tempElement.visible = true;
 
     type = 2;
 
@@ -671,13 +712,21 @@ $("#view-3d").click(function () {
 
     scene.children.forEach(child => {
 
-        if (child.type == "Line"){
+        if (child.type == "Line") {
 
             child.visible = false;
 
         }
 
+        if (child.type == "Mesh") {
+
+            child.visible = true;
+
+        }
+
     });
+
+    buildWalls();
 
     type = 3;
 
