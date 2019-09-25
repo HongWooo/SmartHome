@@ -1,16 +1,15 @@
 import * as THREE from './node_modules/three/build/three.module.js';
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from './node_modules/three/examples/jsm/controls/TransformControls.js';
-import { OBJLoader } from './node_modules/three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from './node_modules/three/examples/jsm/loaders/MTLLoader.js';
+import { FBXLoader } from './node_modules/three/examples/jsm/loaders/FBXLoader.js';
 
 
 // basic
 var feature = [];
 
 function figure() {
-    this.point_1 = null;
-    this.point_2 = null;
+    this.point_1 = new THREE.Vector3();
+    this.point_2 = new THREE.Vector3();
     this.sorts = 0;//0为墙壁，1为窗户,2为门板
 }
 
@@ -50,7 +49,7 @@ function initLight() {
     ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.618);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 1);
     directionalLight.position.set(1, 0.75, 0.5).normalize();
     directionalLight.castShadow = true;
     scene.add(directionalLight);
@@ -133,7 +132,11 @@ function initElement() {
 }
 
 var elementMap = {
-    'chair': ['AM199_Set_01.obj', 'AM199_Set_01.mtl']
+    'Sofa': 'Sofa.fbx',
+    'Bed': 'Bed.fbx',
+    'Chair': 'Chair.fbx',
+    'ComputerDesk': 'ComputerDesk.fbx',
+    'WoodTable': 'WoodTable.fbx',
 };
 
 var elementName;
@@ -142,86 +145,117 @@ function setElementName(name) {
 
     elementName = name;
 
-    var loader = new OBJLoader();
+    var loader = new FBXLoader();
+    loader.load('models/fbx/' + elementMap[name], function (object) {
 
-    // load a resource
-    loader.load(
-        // resource URL
-        'modules/obj/' + elementMap[name][0],
-        // called when resource is loaded
-        function (object) {
+        object.traverse(function (child) {
 
-            scene.remove(tempElement);
-            tempElement = object;
-            scene.add(tempElement);
+            if (child.isMesh) {
 
-        },
-        // called when loading is in progresses
-        function (xhr) {
+                child.castShadow = true;
+                child.receiveShadow = true;
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            }
 
-        },
-        // called when loading has errors
-        function (error) {
+        });
 
-            console.log('An error happened');
+        scene.remove(tempElement);
+        tempElement = object;
+        scene.add(tempElement);
 
-        }
-    );
+    });
 
 }
 
 function buildElement(name, intersect) {
 
-    var loader = new OBJLoader();
+    var loader = new FBXLoader();
+    loader.load('models/fbx/' + elementMap[name], function (object) {
 
-    // load a resource
-    loader.load(
-        // resource URL
-        'modules/obj/' + elementMap[name][0],
-        // called when resource is loaded
-        function (object) {
+        object.position.copy(intersect.point).add(intersect.face.normal);
+        object.traverse(function (child) {
 
-            object.position.copy(intersect.point).add(intersect.face.normal);
-            object.castShadow = true;
-            scene.add(object);
-            for (var i = 0; i < object.children.length; i++) {
-                objects.push(object.children[i]);
+            objects.push(child);
+
+            if (child.isMesh) {
+
+                child.castShadow = true;
+                child.receiveShadow = true;
+
             }
 
-        },
-        // called when loading is in progresses
-        function (xhr) {
+        });
+        scene.add(object);
 
-            console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-
-        },
-        // called when loading has errors
-        function (error) {
-
-            console.log('An error happened');
-
-        }
-    );
+    });
 
 }
 
 function buildWall(data) {
 
-    console.log(data);
-
     switch (data.sorts) {
 
         case 0: //wall
+            var len = ((data.point_1.x - data.point_2.x) ** 2 + (data.point_1.z - data.point_2.z) ** 2) ** 0.5;
+
+            var wallGeo = new THREE.BoxBufferGeometry(50, 400, len + 50);
+            var wallMTL = new THREE.MeshLambertMaterial({
+                color: 	0xfff5ee,
+            });
+            var wallMesh = new THREE.Mesh(wallGeo, wallMTL);
+            wallMesh.castShadow = true;
+            wallMesh.receiveShadow = true;
+            wallMesh.position.x = (data.point_1.x + data.point_2.x) / 2;
+            wallMesh.position.z = (data.point_1.z + data.point_2.z) / 2;
+            wallMesh.position.y = 200;
+            if (data.point_1.z == data.point_2.z) {
+
+                wallMesh.rotation.y = Math.PI / 2;
+
+            }
+            scene.add(wallMesh);
 
             break;
 
         case 1: //window
+            var len = ((data.point_1.x - data.point_2.x) ** 2 + (data.point_1.z - data.point_2.z) ** 2) ** 0.5;
+
+            var windowGeo = new THREE.BoxBufferGeometry(52, 100, len + 50);
+            var texture = new THREE.TextureLoader().load('models/textures/window.png');
+            var windowMtl = new THREE.MeshBasicMaterial({ map: texture });
+            var windowMesh = new THREE.Mesh(windowGeo, windowMtl);
+            windowMesh.castShadow = true;
+            windowMesh.receiveShadow = true;
+            windowMesh.position.x = (data.point_1.x + data.point_2.x) / 2;
+            windowMesh.position.z = (data.point_1.z + data.point_2.z) / 2;
+            windowMesh.position.y = 250;
+            if (data.point_1.z == data.point_2.z) {
+
+                windowMesh.rotation.y = Math.PI / 2;
+
+            }
+            scene.add(windowMesh);
 
             break;
 
         case 2: //door
+            var len = ((data.point_1.x - data.point_2.x) ** 2 + (data.point_1.z - data.point_2.z) ** 2) ** 0.5;
+
+            var doorGeo = new THREE.BoxBufferGeometry(52, 250, len + 50);
+            var texture = new THREE.TextureLoader().load('models/textures/door1.png');
+            var doorMTL = new THREE.MeshBasicMaterial({ map: texture });
+            var doorMesh = new THREE.Mesh(doorGeo, doorMTL);
+            doorMesh.castShadow = true;
+            doorMesh.receiveShadow = true;
+            doorMesh.position.x = (data.point_1.x + data.point_2.x) / 2;
+            doorMesh.position.z = (data.point_1.z + data.point_2.z) / 2;
+            doorMesh.position.y = 125;
+            if (data.point_1.z == data.point_2.z) {
+
+                doorMesh.rotation.y = Math.PI / 2;
+
+            }
+            scene.add(doorMesh);
 
             break;
 
@@ -230,6 +264,8 @@ function buildWall(data) {
 }
 
 function buildWalls() {
+
+    console.log(feature);
 
     for (var i = 0; i < wallList.length; i++) {
 
@@ -363,7 +399,7 @@ function onDocumentMouseMove(event) {
                     geometry.vertices.push(point1);
                     geometry.vertices.push(point2);
                     tempLine = new THREE.Line(geometry, new THREE.LineDashedMaterial({ color: 0xff0000, dashSize: 10, gapSize: 1, scale: 0.5 }));
-                    tempLine2.computeLineDistances();
+                    tempLine.computeLineDistances();
 
                 }
 
@@ -441,7 +477,7 @@ function onDocumentClick(event) {
             var intersect = intersects[0];
 
             //画墙壁
-            if (mode === 0) {
+            if (mode == 0) {
 
                 switch (cnt) {
 
@@ -465,17 +501,19 @@ function onDocumentClick(event) {
                         objects2.push(line);
 
                         var a = new figure();
-                        a.point_1 = point1;
-                        a.point_2 = point2;
+                        a.point_1.copy(point1);
+                        a.point_2.copy(point2);
                         a.sorts = 0;
                         feature.push(a);
                         wallList.push(0);
+
+                        console.log(feature);
 
                         break;
 
                 }
 
-            } else if (mode === 1) {//画窗户
+            } else if (mode == 1) {//画窗户
 
                 switch (cnt) {
 
@@ -499,8 +537,8 @@ function onDocumentClick(event) {
                         objects2.push(line);
 
                         var a = new figure();
-                        a.point_1 = point1;
-                        a.point_2 = point2;
+                        a.point_1.copy(point1);
+                        a.point_2.copy(point2);
                         a.sorts = 1;
                         feature.push(a);
                         wallList.push(0);
@@ -533,8 +571,8 @@ function onDocumentClick(event) {
                         objects2.push(line);
 
                         var a = new figure();
-                        a.point_1 = point1;
-                        a.point_2 = point2;
+                        a.point_1.copy(point1);
+                        a.point_2.copy(point2);
                         a.sorts = 2;
                         feature.push(a);
                         wallList.push(0);
@@ -601,7 +639,20 @@ function onDocumentKeyDown(event) {
 
     } else if (type == 2) {
 
+        switch (event.keyCode) {
 
+            case 87: // W
+                setMode(0);
+                break;
+
+            case 69: // E
+                setMode(1);
+                break;
+
+            case 82: // R
+                setMode(2);
+                break;
+        }
 
     }
 
@@ -640,7 +691,7 @@ render();
 $(".list-item").click(function () {
     console.log($(this).children('p').text());
 
-    setElementName('chair');
+    setElementName('sofa');
 });
 
 
