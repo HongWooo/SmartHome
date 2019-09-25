@@ -134,11 +134,11 @@ function initElement() {
 }
 
 var elementMap = {
-    'Sofa': 'Sofa.fbx',
-    'Bed': 'Bed.fbx',
-    'Chair': 'Chair.fbx',
-    'ComputerDesk': 'ComputerDesk.fbx',
-    'WoodTable': 'WoodTable.fbx',
+    '231': ['Sofa.fbx', 1.0],
+    '251': ['Bed.fbx', 1.0],
+    '211': ['Chair.fbx', 3.0],
+    '241': ['ComputerDesk.fbx', 1.0],
+    '221': ['WoodTable.fbx', 1.0],
 };
 
 var elementName;
@@ -148,7 +148,9 @@ function setElementName(name) {
     elementName = name;
 
     var loader = new FBXLoader();
-    loader.load('models/fbx/' + elementMap[name], function (object) {
+    loader.load('models/fbx/' + elementMap[name][0], function (object) {
+
+        object.scale.multiplyScalar(elementMap[name][1]);
 
         object.traverse(function (child) {
 
@@ -172,9 +174,10 @@ function setElementName(name) {
 function buildElement(name, intersect) {
 
     var loader = new FBXLoader();
-    loader.load('models/fbx/' + elementMap[name], function (object) {
+    loader.load('models/fbx/' + elementMap[name][0], function (object) {
 
         object.position.copy(intersect.point).add(intersect.face.normal);
+        object.scale.multiplyScalar(elementMap[name][1]);
         object.traverse(function (child) {
 
             objects.push(child);
@@ -721,8 +724,11 @@ function showVR() {
     window.addEventListener('deviceorientation', setDeviceOrientationControls, true);
 
     animate();
-
 }
+
+$("#view-vr").click(function () {
+    showVR();
+});
 
 function setDeviceOrientationControls(e) {
     controls = new DeviceOrientationControls(camera, true);
@@ -743,21 +749,11 @@ function animate() {
 
     renderer.setSize(width, height);
     effect.setSize(width, height);
-
     effect.render(scene, camera);
 
 }
 
 
-// 点击左侧图片
-$(".list-item").click(function () {
-    console.log($(this).children('p').text());
-
-    setElementName('Sofa');
-});
-
-
-// 
 $("#view-2d").click(function () {
     //切换到2D
     $(this).addClass("active");
@@ -803,6 +799,45 @@ $("#view-2d").click(function () {
     render();
 
 });
+
+$(".tool-bar-right-header-0 .list-item").click(function () {
+    console.log($(this).children('p').text());
+    console.log($(this).val());
+    var x = $(this).val()
+    setMode(0);
+    if (x == '111') {
+        setMode(0);
+    }
+    else if (x == '121') {
+        setMode(2);
+    }
+    else if (x == '124') {
+        setMode(1);
+    }
+});
+
+$(".tool-bar-right-header-1 li").click(function () {
+    console.log($(this).children('p').text());
+    console.log($(this).val());
+    setElementName("" + $(this).val());
+});
+
+$("#save").click(function () {
+    exportScene();
+    alert("已保存");
+});
+
+$(".nav .dropdown-menu li").click(function () {
+    console.log($(this).text());
+    var text = $(this).text();
+    if (text == '加载') {
+        loadScene();
+    }
+    if (text == '清除') {
+        cleanScene();
+    }
+});
+
 
 
 $("#view-3d").click(function () {

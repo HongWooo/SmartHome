@@ -221,6 +221,8 @@ html, body {
     color:#333333;
 }
 
+
+
 .tool-bar-right-header-1 .tool-bar-right-content{
     height: 500px;
 }
@@ -245,6 +247,11 @@ html, body {
 }
 .tool-bar-right-header-1 #furn-type .select:hover{
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.tool-bar-right-header-1 .list-item img{
+    height: 120px;
+    width: 120px;
 }
 
 
