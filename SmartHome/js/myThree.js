@@ -209,6 +209,8 @@ function buildElement(name, intersect) {
 
 function buildWall(data) {
 
+    console.log(data);
+
     switch (data.sorts) {
 
         case 0: //wall
