@@ -2,6 +2,8 @@ import * as THREE from './node_modules/three/build/three.module.js';
 import { OrbitControls } from './node_modules/three/examples/jsm/controls/OrbitControls.js';
 import { TransformControls } from './node_modules/three/examples/jsm/controls/TransformControls.js';
 import { FBXLoader } from './node_modules/three/examples/jsm/loaders/FBXLoader.js';
+import { StereoEffect } from './node_modules/three/examples/jsm/effects/StereoEffect.js';
+import { DeviceOrientationControls } from './node_modules/three/examples/jsm/controls/DeviceOrientationControls.js';
 
 
 // basic
@@ -200,7 +202,7 @@ function buildWall(data) {
 
             var wallGeo = new THREE.BoxBufferGeometry(50, 400, len + 50);
             var wallMTL = new THREE.MeshLambertMaterial({
-                color: 	0xfff5ee,
+                color: 0xfff5ee,
             });
             var wallMesh = new THREE.Mesh(wallGeo, wallMTL);
             wallMesh.castShadow = true;
@@ -264,8 +266,6 @@ function buildWall(data) {
 }
 
 function buildWalls() {
-
-    console.log(feature);
 
     for (var i = 0; i < wallList.length; i++) {
 
@@ -507,8 +507,6 @@ function onDocumentClick(event) {
                         feature.push(a);
                         wallList.push(0);
 
-                        console.log(feature);
-
                         break;
 
                 }
@@ -687,14 +685,79 @@ init();
 render();
 
 
-//点击左侧图片
+// export, clean, load
+function exportScene() {
+
+    var sceneJson = JSON.stringify(scene.toJSON());
+    localStorage.setItem('scene', sceneJson);
+
+}
+
+function cleanScene() {
+
+    scene = new THREE.Scene();
+
+}
+
+function loadScene() {
+
+    var json = localStorage.getItem("scene");
+    if (json) {
+        var loadedGeometry = JSON.parse(json);
+        var loader = new THREE.ObjectLoader();
+        scene = loader.parse(loadedGeometry);
+    }
+
+}
+
+
+// show VR
+var effect, controls;
+
+function showVR() {
+
+    effect = new StereoEffect(renderer);
+
+    window.addEventListener('deviceorientation', setDeviceOrientationControls, true);
+
+    animate();
+
+}
+
+function setDeviceOrientationControls(e) {
+    controls = new DeviceOrientationControls(camera, true);
+    controls.connect();
+    controls.update();
+    window.removeEventListener('deviceorientation', setDeviceOrientationControls, true);
+}
+
+function animate() {
+
+    requestAnimationFrame(animate);
+
+    var width = document.getElementById("canvas").offsetWidth;
+    var height = document.getElementById("canvas").offsetHeight;
+
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(width, height);
+    effect.setSize(width, height);
+
+    effect.render(scene, camera);
+
+}
+
+
+// 点击左侧图片
 $(".list-item").click(function () {
     console.log($(this).children('p').text());
 
-    setElementName('sofa');
+    setElementName('Sofa');
 });
 
 
+// 
 $("#view-2d").click(function () {
     //切换到2D
     $(this).addClass("active");
